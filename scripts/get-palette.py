@@ -21,17 +21,17 @@ def main(pattern, n_colors=8, pixels_per_image=1024, cluster_hsv=False):
         rgb_flat = norm_rgb.reshape(-1, 3)
         all_rgb[i] = shuffle(rgb_flat)[:pixels_per_image]
 
-    # flatten so we just have a long array of RGB values
-    all_rgb = all_rgb.reshape(-1, 3)
-
     # either cluster in hue-saturation-value space or in RGB
     if cluster_hsv:
-        hsv_flat = color.rgb2hsv(all_rgb)
+        hsv_flat = color.rgb2hsv(all_rgb).reshape(-1,3)
         phi = 2*np.pi*hsv_flat[:,0]
         x = hsv_flat[:,1]*np.cos(phi)
         y = hsv_flat[:,1]*np.sin(phi)
         z = hsv_flat[:,2]
     else:
+        # flatten so we just have a long array of RGB values
+        all_rgb = all_rgb.reshape(-1, 3)
+
         x = all_rgb[:,0]
         y = all_rgb[:,1]
         z = all_rgb[:,2]
@@ -62,8 +62,8 @@ if __name__ == "__main__":
     parser = ArgumentParser(description="")
     parser.add_argument("-f", "--files", dest="file_pattern", required=True,
                         type=str, help="Glob pattern for image files to load.")
-    parser.add_argument("--hsv", dest="hsv", default=False,
-                        type=bool, help="Cluster in HSV instead of RGB.")
+    parser.add_argument("--hsv", dest="hsv", default=False, action="store_true",
+                        help="Cluster in HSV instead of RGB.")
     parser.add_argument("--ppi", dest="pixels_per_image", default=1024,
                         type=int, help="Number of pixels to grab from each image.")
 
