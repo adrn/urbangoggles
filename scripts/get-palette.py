@@ -52,7 +52,8 @@ def main(pattern, n_colors=8, pixels_per_image=1024, cluster_hsv=False):
     ax.imshow(rgb_clusters.reshape(1,len(rgb_clusters),3), interpolation='nearest')
     ax.xaxis.set_visible(False)
     ax.yaxis.set_visible(False)
-    plt.show()
+    plt.savefig("blah.png")
+    # plt.show()
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
