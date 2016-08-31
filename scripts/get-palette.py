@@ -27,10 +27,10 @@ def main(pattern, n_colors=8, pixels_per_image=1024, cluster_hsv=False):
     # either cluster in hue-saturation-value space or in RGB
     if cluster_hsv:
         hsv_flat = color.rgb2hsv(all_rgb)
-        phi = 2*np.pi*hsv[0]
-        x = hsv[1]*np.cos(phi)
-        y = hsv[1]*np.sin(phi)
-        z = hsv[2]
+        phi = 2*np.pi*hsv_flat[:,0]
+        x = hsv_flat[:,1]*np.cos(phi)
+        y = hsv_flat[:,1]*np.sin(phi)
+        z = hsv_flat[:,2]
     else:
         x = all_rgb[:,0]
         y = all_rgb[:,1]
