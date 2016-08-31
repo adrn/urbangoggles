@@ -4,6 +4,7 @@ import sys
 import glob
 
 # Third-party
+import h5py
 import matplotlib.pyplot as plt
 import numpy as np
 import skimage.io as io
@@ -15,7 +16,13 @@ OUTPUT_PATH = "palettes"
 if not os.path.exists(OUTPUT_PATH):
     os.mkdir(OUTPUT_PATH)
 
-def main(city_name, pattern, n_colors=8, pixels_per_image=1024, cluster_hsv=False):
+def main(city_name, pattern, n_colors=8, pixels_per_image=1024, cluster_hsv=False,
+         hist_filename="hist.h5"):
+    with h5py.File(hist_filename, "r") as f:
+        bins = f["bins"][...]
+        counts = f["counts"][...]
+    weights = 1.0 / (1.0 + counts)
+
     ic = io.ImageCollection(pattern)
 
     # load a subset of the pixels from each image into a single array
@@ -41,7 +48,15 @@ def main(city_name, pattern, n_colors=8, pixels_per_image=1024, cluster_hsv=Fals
         z = all_rgb[:,2]
 
     # feature matrix
-    X = np.vstack((x,y,z)).T
+    X = np.vstack((x, y, z)).T
+
+    inds = np.digitize(X, bins) - 1
+    inds[inds < 0] = 0
+    inds[inds >= len(bins) - 1] = len(bins) - 2
+    probs = weights[inds[:, 0], inds[:, 1], inds[:, 2]]
+    probs /= np.sum(probs)
+    inds = np.random.choice(np.arange(len(probs)), size=len(probs), p=probs)
+    X = X[inds]
 
     clf = KMeans(n_clusters=n_colors)
     clf.fit(X)
