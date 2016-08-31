@@ -74,9 +74,11 @@ if __name__ == "__main__":
                         help="Cluster in HSV instead of RGB.")
     parser.add_argument("--ppi", dest="pixels_per_image", default=1024,
                         type=int, help="Number of pixels to grab from each image.")
+    parser.add_argument("-n", "--n-colors", dest="n_colors", default=8,
+                        type=int, help="Number of colors in the palette.")
 
     args = parser.parse_args()
 
     main(pattern=args.file_pattern, city_name=args.city_name,
-         pixels_per_image=args.pixels_per_image,
+         pixels_per_image=args.pixels_per_image, n_colors=args.n_colors,
          cluster_hsv=args.hsv)
