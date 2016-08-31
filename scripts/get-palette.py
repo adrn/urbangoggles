@@ -56,7 +56,7 @@ def main(city_name, pattern, n_colors=8, pixels_per_image=1024, cluster_hsv=Fals
     ax.imshow(rgb_clusters.reshape(1,len(rgb_clusters),3), interpolation='nearest')
     ax.xaxis.set_visible(False)
     ax.yaxis.set_visible(False)
-    plt.savefig(os.path.join(OUTPUT_PATH, "{}.png".format(city_name)))
+    plt.savefig(os.path.join(OUTPUT_PATH, "{}.png".format(city_name)), bbox_inches="tight")
 
     np.savetxt(os.path.join(OUTPUT_PATH, "{}.csv".format(city_name)), rgb_clusters, delimiter=",")
 
