@@ -11,7 +11,11 @@ import skimage.color as color
 from sklearn.utils import shuffle
 from sklearn.cluster import KMeans
 
-def main(pattern, n_colors=8, pixels_per_image=1024, cluster_hsv=False):
+OUTPUT_PATH = "palettes"
+if not os.path.exists(OUTPUT_PATH):
+    os.mkdir(OUTPUT_PATH)
+
+def main(city_name, pattern, n_colors=8, pixels_per_image=1024, cluster_hsv=False):
     ic = io.ImageCollection(pattern)
 
     # load a subset of the pixels from each image into a single array
@@ -52,7 +56,9 @@ def main(pattern, n_colors=8, pixels_per_image=1024, cluster_hsv=False):
     ax.imshow(rgb_clusters.reshape(1,len(rgb_clusters),3), interpolation='nearest')
     ax.xaxis.set_visible(False)
     ax.yaxis.set_visible(False)
-    plt.show()
+    plt.savefig(os.path.join(OUTPUT_PATH, "{}.png".format(city_name)))
+
+    np.savetxt(os.path.join(OUTPUT_PATH, "{}.csv".format(city_name)), rgb_clusters, delimiter=",")
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
@@ -62,6 +68,8 @@ if __name__ == "__main__":
     parser = ArgumentParser(description="")
     parser.add_argument("-f", "--files", dest="file_pattern", required=True,
                         type=str, help="Glob pattern for image files to load.")
+    parser.add_argument("-c", "--city", dest="city_name", required=True,
+                        type=str, help="Name of the city.")
     parser.add_argument("--hsv", dest="hsv", default=False, action="store_true",
                         help="Cluster in HSV instead of RGB.")
     parser.add_argument("--ppi", dest="pixels_per_image", default=1024,
@@ -69,5 +77,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    main(args.file_pattern, pixels_per_image=args.pixels_per_image,
+    main(pattern=args.file_pattern, city_name=args.city_name,
+         pixels_per_image=args.pixels_per_image,
          cluster_hsv=args.hsv)
